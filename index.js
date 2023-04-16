@@ -4,8 +4,14 @@ var httpProxy = require('http-proxy');
 var proxy = httpProxy.createProxyServer({});
 
 var server = http.createServer(function (req, res) {
-    var url = req.headers['proxy-target-url'];
-    var auth = req.headers['proxy-target-auth'];
+    var url = req.headers['proxy-url'];
+    var auth = req.headers['proxy-auth'];
+
+    if (url === undefined) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+        return;
+    }
 
     if (auth !== process.env.PROXY_AUTH) {
         res.writeHead(401, { 'Content-Type': 'text/plain' });
