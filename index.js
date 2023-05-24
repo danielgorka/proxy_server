@@ -23,18 +23,24 @@ var server = http.createServer(function (req, res) {
     delete req.headers['proxy-auth'];
 
     console.log("Proxying request URL: " + url);
-    proxy.web(req, res, { 
-        target: url, 
-        prependPath: true, 
-        ignorePath: true, 
-        xfwd: false, 
-        secure: false, 
-        changeOrigin: true, 
-        autoRewrite: true, 
-        hostRewrite: true, 
-        protocolRewrite: true, 
-        followRedirects: true 
-    });
+    try {
+        proxy.web(req, res, {
+            target: url,
+            prependPath: true,
+            ignorePath: true,
+            xfwd: false,
+            secure: false,
+            changeOrigin: true,
+            autoRewrite: true,
+            hostRewrite: true,
+            protocolRewrite: true,
+            followRedirects: true
+        });
+    } catch (error) {
+        console.error(error);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+    }
 });
 
 var port = process.env.PORT || 5050;
